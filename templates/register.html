@@ -1,0 +1,41 @@
+{% load static %}
+{%block content%}
+{%include 'basicNav.html'%}
+<link rel="stylesheet" href="{%static 'css/login.css'%}"/>
+  <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-2"></div>
+            <div class="col-lg-6 col-md-8 login-box">
+
+                <div class="col-lg-12 login-title">
+                    Register Now!
+                </div>
+
+                <div class="col-lg-12 login-form">
+                    <div class="col-lg-12 login-form">
+                       <form method="post">
+        <div class="container bg-light">
+            {%csrf_token%}
+            <br><br>
+            <div class="form-group">
+                <form method="POST" enctype="multipart/form-data">
+                     {% csrf_token %}
+            {{form.as_p}}
+                    </form>
+                </div>
+            <br><br>
+            <div class="col-lg-6 login-btm login-button">
+            <button type="submit" class="btn btn-outline-primary d-flex justify-content-center">REGISTER</button>
+            </div>
+            <span class="text-danger">{{errormsg}}</span>
+            <br><br>
+        </div>
+    </form>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-2"></div>
+            </div>
+        </div>
+  </div>
+
+{%endblock%}

@@ -1,0 +1,40 @@
+{% extends "layout/layout1.html" %}
+{% load static %}
+{%block content%}
+{%include 'basicNav.html'%}
+<link rel="stylesheet" href="{%static 'css/login.css'%}"/>
+  <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-2"></div>
+            <div class="col-lg-6 col-md-8 login-box">
+
+                <div class="col-lg-12 login-title">
+                    LOGIN
+                </div>
+
+                <div class="col-lg-12 login-form">
+                    <div class="col-lg-12 login-form">
+                       <form method="post">
+        <div class="container bg-light">
+            {%csrf_token%}
+            <br><br>
+            <div class="form-group">
+            {{form.as_p}}
+                </div>
+            <br><br>
+            <div class="col-lg-6 login-btm login-button">
+            <button type="submit" class="btn btn-outline-primary d-flex justify-content-center">LOGIN</button>
+            </div>
+            <span class="text-danger">{{errormsg}}</span>
+            <br><br>
+        </div>
+    </form>
+                        <br><br><br><br>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-2"></div>
+            </div>
+        </div>
+  </div>
+
+{%endblock%}

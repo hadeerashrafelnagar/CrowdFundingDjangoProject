@@ -1,0 +1,411 @@
+{% extends "layout/layout1.html" %}
+{% load static %}
+{% load tag_library %}
+
+{% block content %}
+
+<!--include nav bar-->
+
+{% include "mainNav.html" %}
+
+<div style="height:65px;"></div>
+<!--for error -->
+
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<div class="container">
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Error !</strong> {{message}}.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>
+{% endif %}
+{% if message.tags == 'success' %}
+
+<div class="container">
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+        <strong>Sucess !</strong> {{message}}.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+<!--================== start ===============-->
+<div class="container">
+    <div class="card mb-3">
+        <div class="bxslider2 w-100" style="height:500px;max-height:500px">
+            {%if images %}
+            {% for image in images %}
+            {% if image.image %}
+            <div>
+
+                <img class="card-img-top" src="{{image.image.url }}" class="w-100" height="500">
+            </div>
+
+            {% endif %}
+            {% endfor %}
+            {% else %}
+            <img class="card-img-top" src="{% static 'projects/image/001.jpg' %}">
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <h5 class="card-title text-primary h2">{{project.title}}</h5>
+            <p class="card-text lead pl-5">{{project.details}}</p>
+            <p class="card-text">
+                <small class="text-muted">Created From {{project.get_date}}</small>
+
+            </p>
+            <p class="card-text lead">
+                <div class="row ">
+                    <div class="col-md-3 border p-4 ">
+                        <span class="h5 mr-5">Need To </span>
+                        <span class=" badge badge-pill badge-info h3">{{project.totalTarget}} $</span>
+                    </div>
+                    <div class="col-md-3 border p-4">
+                        <span class="h5 mr-5"> Have </span>
+                        <span class="badge badge-pill badge-warning">{{project.donationMoney.amount__sum|default_if_none:0|to_int}}</span>
+                    </div>
+                    <div class="col-md-3 border p-4">
+                        <i class="fas fa-clock fa-2x"></i>
+                        <span class="h3 text-success">{{project.start_date}} </span>
+                    </div>
+                    <div class="col-md-3 border p-4">
+
+                        <i class="fas fa-hourglass fa-2x"></i>
+                        <span class="h3 text-danger">{{project.end_date}}</span>
+                    </div>
+                    <!--======================================-->
+            <div class="w-100"></div>
+            <div class="col-md-3 border p-4 ">
+                        <i class="fas fa-users fa-1x "></i>
+                        <span class="h5 mr-5"> Suplliers </span>
+                        <span class="badge badge-secondary">{{project.donationCount|default_if_none:0|to_int}}</span>
+                    </div>
+                    <div class="col-md-3 border p-4">
+                        <i class="fas fa-business-time"></i>
+                        <span class="h5 mr-5"> Remander </span>
+                        <span class="badge badge-success">{{project.donationMoney.amount__sum|default_if_none:0|to_int|sub:project.totalTarget}} $</span>
+                    </div>
+                    <div class="col-md-6 border p-4">
+                        <span class="mr-3 text-muted h3">Categories</span>
+                        <span class="h3"> <a href="{% url 'projects:show' project.category.id %}" class="badge badge-primary">{{project.category.name}}</a></span>
+                    </div>
+
+                </div>
+            </p>
+
+            <p class="card-text lead ">
+                {% for tage in project.getTages %}
+                         <a href="/search?mode=1&search={{tage}}" class="badge badge-primary">{{tage}}</a>
+                {% endfor %}
+            </p>
+            <hr>
+            <p class="card-text lead ">
+                
+                {% comment %}  {% endcomment %}
+                {% if authenticated %}
+            <div class="row">
+                <div class="col-md">
+                    <div class="my-rating" data-rating="{{project.rating.rate__avg}}"></div>
+                    <span class=" mr-2 badge badge-primary">{{project.countrate}}</span>
+                </div>
+                <div class="col-md">
+                    <button type="button" class="btn btn-link" data-toggle="modal" data-target="#dnonate"
+                            data-whatever="@mdo">Give Rate
+                    </button>
+                    <button type="button" class="btn btn-link" data-toggle="modal" data-target="#dnonate2{{forloop.counter}}" data-whatever="@mdo">Give Donation</button>
+
+                    <button type="button" class="btn btn-link" data-toggle="modal" data-target="#report"
+                            data-whatever="@mdo">Give Report
+                    </button>
+                    <!--model-->
+                    <div class="modal fade" id="dnonate" tabindex="-1" role="dialog" aria-labelledby="dnonateLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="dnonateLabel">Give Rate To {{project.title}}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="/rate/{{project.id}}" method="post" id="donta">
+                                        {% csrf_token %}
+                                        <div class="my-rating-5"></div>
+                                        <input type="hidden" class="rates" name="rate">
+                                        <input type="submit" class="btn btn-primary" value="OK">
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="report" tabindex="-1" role="dialog" aria-labelledby="reportLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="reportLabel">Give Report To {{project.title}}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="/report/{{project.id}}" method="post" id="repo">
+                                        {% csrf_token %}
+                                        <input name='content' type="text" placeholder="Enter your report reason">
+                                            <button
+                                                type="submit"
+                                                name="submit"
+                                                class="btn btn-info btn-md"
+                                                value="Report Project"
+                                            >Report</button>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--model-->
+                      
+                    <div class="modal fade" id="dnonate2{{forloop.counter}}" tabindex="-1" role="dialog" aria-labelledby="dnonate{{forloop.counter}}Label" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="dnonate{{forloop.counter}}Label">New Donate To {{project.title}}</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              <form action="/donate/{{project.id}}" method="post" id="donta">
+                                  {% csrf_token %}
+                                <div class="form-group">
+                                  <label for="recipient-name" class="col-form-label">Recipient To :</label>
+                                  <input type="text" class="form-control" disabled id="recipient-name" value="{{project.user.username}}">
+                                </div>
+                                <div class="form-group">
+                                  <label  class="col-form-label">Quantity oF Money</label>
+                                  <input type="number"  class="form-control"  required name="amount"  placeholder="Enter Quantity of Money">
+                                </div>
+                                  <input type="submit" class="btn btn-primary"  value="Donate"  >
+                              </form>
+                            </div>
+                               <div class="modal-footer">
+                              <button type="button"  class="btn btn-secondary" data-dismiss="modal">Close</button>
+  
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+                 {% comment %} hadeer {% endcomment %}
+
+                 {% endif %}
+
+        </div>
+        </div>
+    </div>
+</div>
+
+            <!---->
+
+   <div class="container">
+        <!--============= comment ============-->
+            <h2 class="card-title pl-4">
+                <span>Comments</span>
+                <span class="badge badge-pill badge-info">{{commentcount}}</span>
+            </h2>
+            <p class="card-text">
+                {% for comment in project.comments%}
+                <div class="media mx-4 shadow-lg p-3 mb-5 bg-white rounded">
+                    <!-- {% if comment.user.profile.image %} -->
+                    <img class="mr-3 rounded-circle img-comment position-static img-comment"
+                         src="#" alt="Generic placeholder image" width="100" height="100">
+                    <!-- {% else %} -->
+                    <img src="{% static 'projects/image/001.jpg' %}" width="100" height="100" class="rounded-circle">
+                    <!-- {% endif %} -->
+                    <div class="media-body pt-5">
+                        <div class="mt-0">
+                            <button class="btn btn-danger" data-toggle="modal" data-target="#reportcomment{{forloop.counter}}"
+                                    data-whatever="@mdo">report <i class="fas fa-user-lock"></i></button>
+
+                            <!--==========================-->
+
+
+                        </div>
+            <p class="lead text-muted shadow p-3 mb-2 bg-white rounded">
+                {{comment.content}}
+                 <p class=" text-muted lead pl-5"> {{comment.get_date}}</p>
+            </p>
+
+            <!--model-->
+            <div class="modal fade" id="reportcomment{{forloop.counter}}" tabindex="-1" role="dialog"
+                 aria-labelledby="reportcommentLabel{{forloop.counter}}" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+
+                            <h5 class="modal-title" id="dreportcommentLabel{{forloop.counter}}">Comment Report</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/comment/{{project.id}}" method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label class="col-form-label">Project</label>
+                                    <input type="text" disabled class="form-control" value="{{project.title}}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-form-label">Comment to:</label>
+                                    <!-- <input type="text" disabled class="form-control" value="{{comment.user.username}}"> -->
+                                </div>
+                                <div class="form-group">
+                                    <label for="message-text" class="col-form-label">Leave Report:</label>
+                                    <textarea class="form-control" id="message-text" name="content"></textarea>
+                                </div>
+                                <input type="submit" class="btn btn-primary" value="Report">
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <!---->
+        <!--=============-->
+        </div>
+        </div>
+        {% endfor %}
+        <!--add comment-->
+        {% if authenticated %}
+        <!--add comment-->
+        <form class="p-4" method="post" action="{% url 'projects:addcomment' project.id %}">
+            {% csrf_token %}
+              <div class="form-group">
+                <label for="exampleFormControlTextarea1" class="h3 text-info">New Comment</label>
+                <textarea class="form-control" required id="exampleFormControlTextarea1" name ="content" rows="3"></textarea>
+              </div>
+             <div class="form-group  ">
+                 <input type="submit" class="btn btn-primary mb-2 btn-lg" value="Comment">
+             </div>
+            </form>
+            {% else %}
+            <form class="p-4" method="post" action="">
+                {% csrf_token %}
+                  <div class="form-group">
+                    <label for="exampleFormControlTextarea1" class="h3 text-info">New Comment</label>
+                    <textarea class="form-control" disabled id="exampleFormControlTextarea1" name ="content" rows="3"></textarea>
+                  </div>
+                 <div class="form-group  ">
+                     <input disabled ype="submit" class="btn btn-primary mb-2 btn-lg" value="Comment">
+                 </div>
+                </form>
+
+        {% endif %}
+        </form>
+        {% if owned %}
+        <a class="btn btn-primary" href="{% url 'projects:deleteproject' project.id  %}">Delete</a>
+        <a class="btn btn-primary" href="{%url 'projects:editproject' project.id  %}">Update</a>
+       {% endif %}
+   </div>
+
+
+
+<!--end-->
+<!--related project-->
+<div class="container">
+    <h1 class="text-muted text-center mb-5"> Relative Project</h1>
+    <div class="row">
+         {% for project2 in relativesProject %}
+            <div class="col-md-4 mb-3">
+                <div class="card w-100 shadow mb-5 bg-white rounded " style="min-height:600px;max-height:600px;"  >
+                    {% if project2.first_Projectphoto  %}
+                    <img src="{{project2.first_Projectphoto.image.url}}" class="card-img-top w-100" height="200" alt="...">
+                    {% else %}
+                        <img src="{% static 'projects/image/001.jpg' %}" class="card-img-top w-100" height="200" alt="...">
+                    {% endif %}
+
+                   <div class="card-body pt-2 pb-0">
+                    <h5 class="card-title h4 text-info">{{project2.title}}</h5>
+                    <!-- <h5 class="card-title text-secondary">Created By: <sapn class="badge badge-success">{{project2.user.username}}</sapn></h5> -->
+                    <p class="card-text"  style="min-height:100px;max-height:100px;" >
+                        {{project.details|truncatechars:200}}
+                        <button class="badge badge-light btn" data-toggle="modal" data-target="#model4{{forloop.counter}}">Read more</button>
+                        <!-- Modal -->
+                        <div class="modal fade" id="model4{{forloop.counter}}" tabindex="-1" role="dialog" aria-labelledby="model4{{forloop.counter}}Title" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="model4{{forloop.counter}}Title">{{project2.title}}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                {{project2.details}}
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </p>
+                  </div>
+                 <div class="card-body">
+                    <a href="{% url 'projects:detail' project2.id %}" class="card-link">Details</a>
+                 </div>
+                       <div class="more-info">
+                        <div class="row no-gutters ">
+                            <div class="col-md-6 border p-1 ">
+                                <i class="fas fa-star mr-3"></i>
+                                <span class="badge badge-warning">{{project2.rating.rate__avg|default_if_none:0|to_int}}</span>
+                            </div>
+                            <div class="col-md-6 border p-1 ">
+                                <i class="fas fa-users mr-3"></i>
+                                <span class="badge badge-success">{{project2.donationCount|default_if_none:0|to_int}}</span>
+                            </div>
+                            <div class="col-md-6 border p-1 ">
+                                <i class="fas fa-money-check-alt fa-1x mr-3"></i>
+                                <span class="badge badge-success">{{project2.donationMoney.amount__sum|default_if_none:0|to_int}} $</span>
+                            </div>
+                             <div class="col-md-6 border p-1 ">
+                                <i class="fas fa-business-time mr-3"></i>
+                                <span class="badge badge-success">{{project2.donationMoney.amount__sum|default_if_none:0|to_int|sub:project2.totalTarget}} $</span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                  <div class="card-footer text-muted">
+                        {{project2.get_date}}
+                  </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+<!--file javascript-->
+{% block js %}
+<script src="{% static 'projects/js/jquery.star-rating-svg.js'%}"></script>
+<script src="{% static 'projects/js/jquery.bxslider.js'%}"></script>
+<script src="{% static 'projects/js/project.js'%}"></script>
+{% endblock %}

@@ -1,0 +1,20 @@
+{%extends '../mainNav.html'%}
+{% load static %}
+{%block content%}
+
+<div class="text-center">
+    <h2 class="my-4 text-center">Edit PROJECT </h2>
+  
+    <form method="post">
+        <div class="container bg-light">
+            {%csrf_token%}
+            <br><br>
+            {{form}}
+            <br><br>
+            <button type="submit" class="btn btn-primary">Edit Project</button><br>
+            <br><br>
+        </div>
+    </form>
+  
+</div>
+{% endblock %}

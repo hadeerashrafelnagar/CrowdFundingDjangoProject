@@ -1,0 +1,22 @@
+{%extends '../mainNav.html'%}
+{% load static %}
+{%block content%}
+
+<div class="text-center">
+    <h2 class="my-4 text-center">ADD NEW PROJECT </h2>
+    {% if submitted %}
+    <p>NEW PROJECT ADDED Successfully</p>
+    {%  else %}
+    <form method="post"  enctype="multipart/form-data">
+        <div class="container bg-light">
+            {%csrf_token%}
+            <br><br>
+            {{form}}
+            <br><br>
+            <button type="submit" class="btn btn-primary">Add New Project</button><br>
+            <br><br>
+        </div>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

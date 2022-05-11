@@ -1,0 +1,58 @@
+{%extends '../mainNav.html'%}
+{% load static %}
+
+{%block content%}
+
+<div class="text-center">
+    <h2 class="my-4 text-center">ALL PROJECTS  </h2>
+    <div class="card mx-auto col-5 shadow-lg">
+    <h1>{{ object.title}}</h1>
+    <p>{{ object.details }}</p>
+    <p>start_dat: {{ object.start_date|date }}</p>
+    <p>end_dat: {{ object.end_date|date }}</p>
+    <p>Target: {{ object.totalTarget}}</p>
+</div>
+<h1>Comments</h1>
+
+<ul>
+{% for comment in object.comment_set.all %}
+<li> {{comment.text}} --- {{comment.created_at}}  </li>
+{% endfor %}
+</ul>
+<h1>Donations</h1>
+
+<ul>
+{% for d in object.donation_set.all %}
+<li> {{d.amount}} --- {{d.created_at}}  </li>
+{% endfor %}
+</ul>
+{% if owned %}
+<a class="btn btn-primary" href="{% url 'delete-project' object.id  %}">Delete</a>
+<a class="btn btn-primary" href="{%url 'edit-project' object.id  %}">Update</a>
+{% else %}
+<form class="d-flex col-4" method="POST" action="{% url 'add-comment' object.id %}">
+    {% csrf_token %}
+    {% if authenticated %}
+    <input class="form-control me-2" name="text" type="text" placeholder="ADD Comment">
+    <button class="btn btn-outline-primary" type="submit">ADD</button>
+    {% else %}
+    <input disabled class="form-control me-2" name="text" type="text" placeholder="ADD Comment">
+    <button disabled class="btn btn-outline-primary" type="submit">ADD</button>
+    {% endif %}
+    
+  </form>
+
+  <form class="d-flex col-4" method="POST" action="{% url 'add-donation' object.id %}">
+    {% csrf_token %}
+    {% if authenticated %}
+    <input class="form-control me-2" name="amount" type="number" placeholder="ADD Donation">
+    <button class="btn btn-outline-primary" type="submit">ADD</button>
+    {% else %}
+    <input disabled class="form-control me-2" name="amount" type="number"  placeholder="ADD Comment">
+    <button disabled class="btn btn-outline-primary" type="submit">ADD</button>
+    {% endif %}
+    
+  </form>
+ {% endif %} 
+</div>
+{% endblock %}

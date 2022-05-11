@@ -1,0 +1,30 @@
+{%extends '../mainNav.html'%}
+{% load static %}
+
+{%block content%}
+
+
+    <div class="container mt-3">
+       
+        <table class="table table-primary table-hover">
+          <thead>
+            <tr>
+              <th>created_at</th>
+              <th>Amount</th>
+              <th>Project</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for d in list %}
+            <tr>
+                <td>{{d.created_at}}  </td> 
+            <td>{{d.amount}}</td>
+            <td>{{d.project}}  </td> 
+        </tr>
+            {% endfor %}
+            </ul>
+          </tbody>
+        </table>
+      </div>
+
+{% endblock %}

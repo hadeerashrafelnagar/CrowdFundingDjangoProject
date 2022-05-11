@@ -1,0 +1,23 @@
+{%extends '../mainNav.html'%}
+{% load static %}
+
+{%block content%}
+
+<div class="text-center">
+    <h2 class="my-4 text-center">ALL PROJECTS  </h2>
+    
+    {% if authenticated %}
+     <a class="btn btn-danger"href="/addproject"> Add Project</a>
+      {% else %}
+      <p> sign in to add new</p>
+    {% endif %}
+  
+    <ul>
+    {% for p in object_list %}
+       <li> <a href="#" > {{ p }}</a> 
+
+       </li>  
+    {% endfor %}
+</ul>
+</div>
+{% endblock %}
